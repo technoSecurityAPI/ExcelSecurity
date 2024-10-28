@@ -12,7 +12,7 @@ load_dotenv(dotenv_path=env_path)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Security settings
 SECRET_KEY = os.getenv('SECRET')  # Falls back to environment variable
 DEBUG = True  # Turn off in production
