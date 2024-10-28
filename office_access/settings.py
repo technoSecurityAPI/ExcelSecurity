@@ -114,5 +114,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Azure AD settings
-# AZURE_REDIRECT_URI = 'https://tpsapi-andffyc4h8gfftea.northeurope-01.azurewebsites.net/api/check_access'  # Ensure this matches your redirect URI in Azure AD
-AZURE_REDIRECT_URI = 'http://localhost:8000/api/check_access'  # Ensure this
+AZURE_REDIRECT_URI = 'https://excelapiforsecurity.azurewebsites.net/api/check_access'  # Ensure this matches your redirect URI in Azure AD
