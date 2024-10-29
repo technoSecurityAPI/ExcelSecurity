@@ -3,7 +3,7 @@ from .settings import *  # Import all base settings
 
 # Use environment variables for sensitive values
 SECRET_KEY = os.environ['SECRET']
-DEBUG = False  # Turn off debug mode in production
+DEBUG = True  # Turn off debug mode in production
 
 # Configure allowed hosts and CSRF trusted origins
 ALLOWED_HOSTS = [os.environ['WEBSITE_HOSTNAME']]
