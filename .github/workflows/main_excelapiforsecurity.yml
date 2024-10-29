@@ -32,7 +32,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Install collectstatic
-        run: pip manage.py collectstatic --noinput
+        run: python3 manage.py collectstatic --noinput
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
