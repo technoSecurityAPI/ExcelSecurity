@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Security settings
 SECRET_KEY = os.getenv('SECRET')  # Falls back to environment variable
-DEBUG = True  # Turn off in production
+DEBUG = False  # Turn off in production
 
 ALLOWED_HOSTS = ['https://excelapiforsecurity.azurewebsites.net/']  # Update this to your domain or localhost for development
 

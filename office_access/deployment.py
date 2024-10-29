@@ -3,7 +3,7 @@ from .settings import *  # Import all base settings
 
 # Use environment variables for sensitive values
 SECRET_KEY = os.environ['SECRET']
-DEBUG = True  # Turn off debug mode in production
+DEBUG = False  # Turn off debug mode in production
 
 ALLOWED_HOSTS = ['https://excelapiforsecurity.azurewebsites.net'] 
 
