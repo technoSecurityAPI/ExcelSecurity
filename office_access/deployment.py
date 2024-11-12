@@ -5,7 +5,7 @@ from .settings import *  # Import all base settings
 SECRET_KEY = os.environ['SECRET']
 DEBUG = False  # Turn off debug mode in production
 
-ALLOWED_HOSTS = ['https://excelapiforsecurity.azurewebsites.net'] 
+ALLOWED_HOSTS = ['https://adminsagaciter01.pythonanywhere.com/'] 
 
 # Add Whitenoise for serving static files in production
 MIDDLEWARE = [
@@ -24,4 +24,4 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
-AZURE_REDIRECT_URI = 'https://excelapiforsecurity.azurewebsites.net/api/check_access'
+AZURE_REDIRECT_URI = 'https://adminsagaciter01.pythonanywhere.com/api/check_access'

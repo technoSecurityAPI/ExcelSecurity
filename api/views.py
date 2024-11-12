@@ -1,11 +1,12 @@
 import os
 import requests
+import base64
+import json
 from django.http import JsonResponse
 
 def check_user_access(request):
-    # Retrieve parameters
-    user_name = request.GET.get('name')
-    group_id = request.GET.get('group_id')
+    display_name = request.GET.get('name')  # This should be the exact display name of the user
+    group_id = request.GET.get('group_id')  # Fetch group_id from request
 
     # Load sensitive information from environment variables
     client_id = os.getenv('CLIENT_ID')
@@ -26,34 +27,57 @@ def check_user_access(request):
     }
 
     token_r = requests.post(token_url, data=token_data)
+
     if token_r.status_code != 200:
         return JsonResponse({"status": "error", "message": "Failed to get access token from Azure AD", "details": token_r.text})
 
     token = token_r.json().get('access_token')
 
-    # Use Graph API to get the user’s ID based on their display name
-    graph_url = f"https://graph.microsoft.com/v1.0/users?$filter=displayName eq '{user_name}'"
+    # Decode and format JWT token correctly
+    try:
+        header, payload, signature = token.split('.')
+        
+        # Decode header and payload from base64
+        decoded_header = base64.urlsafe_b64decode(header + '==').decode('utf-8')
+        decoded_payload = base64.urlsafe_b64decode(payload + '==').decode('utf-8')
+
+        header_json = json.loads(decoded_header)
+        payload_json = json.loads(decoded_payload)
+        
+        # Now you can access the decoded header and payload
+        print("Decoded Header: ", header_json)
+        print("Decoded Payload: ", payload_json)
+
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": "Failed to decode JWT", "details": str(e)})
+
+    # Fetch user details from Azure AD by filtering users based on their display name
+    graph_url = f"https://graph.microsoft.com/v1.0/users?$filter=displayName eq '{display_name}'"
     headers = {
         'Authorization': f'Bearer {token}'
     }
 
-    user_r = requests.get(graph_url, headers=headers)
-    if user_r.status_code != 200:
-        return JsonResponse({"status": "error", "message": "Failed to fetch user details from Azure AD", "details": user_r.text})
+    graph_r = requests.get(graph_url, headers=headers)
 
-    users = user_r.json().get('value', [])
-    if not users:
-        return JsonResponse({"status": "denied", "message": "User not found"})
+    if graph_r.status_code == 200:
+        users = graph_r.json().get('value', [])
+        if users:
+            user = users[0]  # Get the first user that matches the display name
 
-    user_id = users[0].get('id')  # Get the first matching user’s ID
+            # Fetch the groups for the user
+            user_groups_url = f"https://graph.microsoft.com/v1.0/users/{user['id']}/memberOf"
+            groups_r = requests.get(user_groups_url, headers=headers)
 
-    # Check if the user belongs to the specified group
-    group_check_url = f"https://graph.microsoft.com/v1.0/groups/{group_id}/members/{user_id}/$ref"
-    group_r = requests.get(group_check_url, headers=headers)
-
-    if group_r.status_code == 204:
-        return JsonResponse({"status": "granted", "message": "Access granted"})
-    elif group_r.status_code == 404:
-        return JsonResponse({"status": "denied", "message": "Access denied"})
+            if groups_r.status_code == 200:
+                groups = groups_r.json().get('value', [])
+                # Check if the user is part of the specified group
+                for group in groups:
+                    if group.get('id') == group_id:
+                        return JsonResponse({"status": "granted", "message": "Access granted"})
+                return JsonResponse({"status": "denied", "message": "User is not in the specified group"})
+            else:
+                return JsonResponse({"status": "error", "message": "Unable to fetch user groups from Azure AD", "details": groups_r.text})
+        else:
+            return JsonResponse({"status": "denied", "message": "User not found in Azure AD"})
     else:
-        return JsonResponse({"status": "error", "message": "Error checking group membership", "details": group_r.text})
+        return JsonResponse({"status": "error", "message": "Unable to fetch user details from Azure AD", "details": graph_r.text})

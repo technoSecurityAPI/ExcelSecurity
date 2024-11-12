@@ -17,7 +17,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 SECRET_KEY = os.getenv('SECRET')  # Falls back to environment variable
 DEBUG = False  # Turn off in production
 
-ALLOWED_HOSTS = ['https://excelapiforsecurity.azurewebsites.net/']  # Update this to your domain or localhost for development
+ALLOWED_HOSTS = ['https://adminsagaciter01.pythonanywhere.com/']  # Update this to your domain or localhost for development
 
 # Application definition
 INSTALLED_APPS = [
@@ -93,7 +93,7 @@ STATIC_URL = 'static/'
 CLIENT_ID = os.getenv('CLIENT_ID')
 TENANT_ID = os.getenv('TENANT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-AZURE_REDIRECT_URI = 'https://excelapiforsecurity.azurewebsites.net/api/check_access'
+AZURE_REDIRECT_URI = 'https://adminsagaciter01.pythonanywhere.com/api/check_access'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
